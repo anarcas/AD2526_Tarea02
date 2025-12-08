@@ -75,7 +75,7 @@
     <Component class="javax.swing.JButton" name="jbSalir">
       <Properties>
         <Property name="text" type="java.lang.String" value="Salir y desconectar"/>
-        <Property name="toolTipText" type="java.lang.String" value="Pulsa para salir del programa"/>
+        <Property name="toolTipText" type="java.lang.String" value="Pulsa para salir del programa y desconectar de la base de datos"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbSalirActionPerformed"/>

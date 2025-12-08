@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
  */
 public class ConectorJFrame extends javax.swing.JFrame {
 
+    // Declaración de variables
     private static Connection con = null;
 
     private String driver;
@@ -44,6 +45,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
      */
     public void conector() {
 
+        // Se inicializan las variables
         driver = "com.mysql.cj.jdbc.Driver";
         user = jtfUser.getText();
         pass = jtfPassword.getText();
@@ -52,10 +54,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
 
         try {
 
+            // Se carga el driver JDBC para MySQL según la URL dada
             Class.forName(driver);
-            //con = (Connection) DriverManager.getConnection(url, user, pass);
+            // Se establece la conexión con la BD MySQL
             con = (Connection) DriverManager.getConnection(connectionUrl);
+            // Otra manera de realizar la conexión
+            // con = (Connection) DriverManager.getConnection(url, user, pass);
 
+            // Si la conexión no es nula se establece la conexión.
             if (con != null) {
                 jlEstado.setText("Conexión establecida");
                 jlEstado.setForeground(Color.blue);
@@ -96,11 +102,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * nombres de las comunidades autónomas sin duplicados.
      */
     public static ArrayList<String> comunidadesValoresUnicos(Connection con) {
+        // Se define la sentencia
         String sentenciaSQL = "SELECT DISTINCT comunidad "
                             + "FROM universidad "
                             + "ORDER BY comunidad ASC";
+        // Se declara e instancia una lista que recoge los valores únicos de las comunidades según la consulta anterior
         ArrayList<String> comunidades = new ArrayList<>();
 
+        // Se realiza la consulta y se almacenan los resulstados
         try (Statement consulta = con.createStatement(); 
              ResultSet resultados = consulta.executeQuery(sentenciaSQL)) {
 
@@ -109,6 +118,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 comunidades.add(comunidad);
             }
 
+            // Se muestran los resultados por consola
             System.out.println("Lista de Comunidades cargada: " + comunidades.toString());
 
         } catch (SQLException ex) {
@@ -130,14 +140,15 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * criterio de filtro.
      */
     public void consultaB1(Connection con, String comunidad) {
-
-        ArrayList<String> listaResultados = new ArrayList<>();
-
+        // Se define la sentencia
         String sentenciaSQL = "SELECT a.nombre, a.apellidos, u.nombre as nomUniv "
                             + "FROM atleta a, universidad u "
                             + "WHERE a.universidad = u.codigo "
                             + "AND u.comunidad = ?";
+        // Se declara e instancia una lista que recoge una lista de resultados
+        ArrayList<String> listaResultados = new ArrayList<>();
 
+        // Se realiza la consulta y se almacenan los resulstados
         try (PreparedStatement consulta = con.prepareStatement(sentenciaSQL);) {
 
             consulta.setString(1, comunidad);
@@ -152,8 +163,10 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 listaResultados.add(resultado);
             }
 
+            // Se muestran los resultados en la aplicación swing
             mostrarlistaJLabel(listaResultados, jlConsultaB1);
             jlConsultaB1.setForeground(Color.blue);
+            // Se cierra el objeto ResultSet
             resultados.close();
         
         } catch (SQLException ex) {
@@ -175,7 +188,9 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * @param jLabel El componente JLabel de destino donde se mostrará la lista.
      */
     public static void mostrarlistaJLabel(ArrayList<String> lista, JLabel jLabel) {
+        // Se instancia un constructor de String para formar un texto formateado empleando HTML
         StringBuilder sb = new StringBuilder();
+        
         // Abrir etiqueta html
         sb.append("<html>");
         // Contenido de la lista más salto de línea
@@ -197,12 +212,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * dorsales de los atletas que han competido, sin duplicados.
      */
     public static ArrayList<String> dorsalesValoresUnicos(Connection con) {
-        
+        // Se define la consulta
         String sentenciaSQL = "SELECT DISTINCT dorsal_atl "
                             + "FROM competir "
                             + "ORDER BY dorsal_atl ASC";
+        // Se declara/instancia la lista que almacenará los valores únicos de los dorsales
         ArrayList<String> dorsales = new ArrayList<>();
 
+        // Se realiza la consulta y se almacenan los resultados
         try (Statement consulta = con.createStatement(); 
              ResultSet resultados = consulta.executeQuery(sentenciaSQL)) {
 
@@ -211,6 +228,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 dorsales.add(dorsal);
             }
 
+            // Se muestran los resultados por consola
             System.out.println("Lista de dorsales existentes con puntos: " + dorsales.toString());
 
         } catch (SQLException ex) {
@@ -233,13 +251,16 @@ public class ConectorJFrame extends javax.swing.JFrame {
      */
     public void consultaB2(Connection con, String dorsal) {
 
+        // Se declaran e inician variables auxiliares
         Integer puntos = 0;
         String mensajeSalida = "";
 
+        // Se define la sentencia de la consulta
         String sentenciaSQL = "SELECT sum(puntos) as puntosTotales "
                             + "FROM competir "
                             + "WHERE dorsal_atl = ?";
 
+        // Se realiza la consulta y se obtiene el resultado
         try (PreparedStatement consulta = con.prepareStatement(sentenciaSQL)) {
 
             consulta.setString(1, dorsal);
@@ -251,8 +272,10 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 System.out.println(mensajeSalida);
             }
 
+            // Se muestra el resultado en la aplicación swing
             jlConsultaB2.setText(mensajeSalida);
             jlConsultaB2.setForeground(Color.blue);
+            // Se cierra el objeto ResultSet
             resultados.close();
             
         } catch (SQLException ex) {
@@ -271,12 +294,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * códigos de las pruebas sin duplicados.
      */
     public static ArrayList<String> codigoPruebaValoresUnicos(Connection con) {
-        
+        // Se define la sentencia
         String sentenciaSQL = "SELECT DISTINCT codigo "
                             + "FROM prueba "
                             + "ORDER BY codigo ASC";
+        // Se instancia una lista que almacenará los valores únicos de los códigos
         ArrayList<String> codigos = new ArrayList<>();
 
+        // Se realiza la consulta y se almacenan los resultados obtenidos
         try (Statement consulta = con.createStatement(); 
              ResultSet resultados = consulta.executeQuery(sentenciaSQL)) {
 
@@ -285,6 +310,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 codigos.add(codigo);
             }
 
+            // Se imprimen por consola los resultados
             System.out.println("Lista de códigos de pruebas existentes: " + codigos.toString());
 
         } catch (SQLException ex) {
@@ -307,17 +333,19 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * prueba.
      */
     public void actualizacionC(Connection con, String codigo, Integer distancia) {
-
+        // Se define la consulta
         String sentenciaSQL = "UPDATE prueba SET distancia = ? "
                             + "WHERE codigo = ?";
 
+        // Se realiza la consulta y se obtiene el resultado
         try (PreparedStatement consulta = con.prepareStatement(sentenciaSQL)) {
 
             consulta.setInt(1, distancia);
             consulta.setString(2, codigo);
             int regActualizados = consulta.executeUpdate();
 
-            System.out.println(String.format("Se han actualizado %d %s.", regActualizados, (regActualizados <= 1) ? "registro" : "registros"));
+            // Se muestra el resultado por consola
+            System.out.println(String.format("Se %s actualizado %d %s.", (regActualizados <= 1) ? "ha" : "han",regActualizados, (regActualizados <= 1) ? "registro" : "registros"));
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -335,12 +363,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * consultar.
      */
     public void consultaC(Connection con, String codigo) {
-
+        // Se inicializa una variable auxiliar
         String mensajeSalida = null;
+        // Se define la sentencia de la consulta
         String sentenciaSQL = "SELECT distancia "
                             + "FROM prueba "
                             + "WHERE codigo = ?";
 
+        // Se realiza la consulta y se almacen
         try (PreparedStatement consulta = con.prepareStatement(sentenciaSQL)) {
 
             consulta.setString(1, codigo);
@@ -349,11 +379,14 @@ public class ConectorJFrame extends javax.swing.JFrame {
             while (resultados.next()) {
                 Integer distancia = resultados.getInt("distancia");
                 mensajeSalida = String.format("La distancia de la prueba nº %s ha sido actualizada a %d m.", codigo, distancia);
+                // Se muestran los resultados por consola
                 System.out.println(mensajeSalida);
             }
 
+            // Se muestran los resultados en la aplicación swing
             jlEjercicioC.setText(mensajeSalida);
             jlEjercicioC.setForeground(Color.blue);
+            // Se cierra el objeto ResultSet
             resultados.close();
             
         } catch (SQLException ex) {
@@ -378,21 +411,25 @@ public class ConectorJFrame extends javax.swing.JFrame {
      */
     public void procedimientoD(Connection con, String posicion) {
 
+        // Se declaran variables auxiliares
         Integer numAtletas;
         String mensajeSalida;
         Integer posicionAtleta=Integer.parseInt(posicion);
+        // Se define la llamada al procedimiento
         String llamadaProcedimiento = "{ call atletas_posicion(?, ?) }";
 
+        // Se realiza la llamada al procedimiento y se recogen los resultados
         try (CallableStatement prcProcedimientoNumAtletas = con.prepareCall(llamadaProcedimiento)) {
-            
+            // Se ejecuta el procedimiento
             prcProcedimientoNumAtletas.setInt(1, posicionAtleta);
             prcProcedimientoNumAtletas.registerOutParameter(2, java.sql.Types.INTEGER);
             prcProcedimientoNumAtletas.execute();
-            
+            // Se obtiene el resultado
             numAtletas=prcProcedimientoNumAtletas.getInt(2);
-            
+            // Se muestra el resultado por pantalla
             mensajeSalida=String.format("El número de atletas que han acabado en la posición nº %d = %d.", posicionAtleta,numAtletas);
             System.out.println(mensajeSalida);
+            // Se muestra el resultado en la aplicación swing
             jlProcedimientoD.setText(mensajeSalida);
             jlProcedimientoD.setForeground(Color.blue);
             
@@ -413,12 +450,15 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * posiciones únicas de las pruebas, ordenadas de forma ascendente.
      */
     public static ArrayList<Integer> posicionValoresUnicos(Connection con) {
+        // Se define la consulta
         String sentenciaSQL = "SELECT DISTINCT posicion "
                             + "FROM competir "
                             + "WHERE posicion > 0 "
                             + "ORDER BY posicion ASC";
+        // Se instancia una lista para almacenar los valores únicos de las posiciones
         ArrayList<Integer> posiciones = new ArrayList<>();
 
+        // Se realiza la consulta y se almacenan los resultados
         try (Statement consulta = con.createStatement(); 
              ResultSet resultados = consulta.executeQuery(sentenciaSQL)) {
 
@@ -427,6 +467,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
                 posiciones.add(posicion);
             }
 
+            // Se muestran los resultados por consola
             System.out.println("Lista de posiciones de pruebas existentes: " + posiciones.toString());
 
         } catch (SQLException ex) {
@@ -446,10 +487,12 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * @param con La conexión activa a la base de datos MySQL que se desea
      * cerrar.
      */
-    public void desconectar(Connection con){
-    if (con != null) {
+    public void desconectar(Connection con) {
+        // Si existe conexión o no es nula cierra la conexión
+        if (con != null) {
             try {
                 con.close();
+                // Se muestra el resultado en la aplicación swing
                 jlEstado.setText("Conexión cerrada");
                 jlEstado.setForeground(Color.red);
             } catch (SQLException ex) {
@@ -466,19 +509,22 @@ public class ConectorJFrame extends javax.swing.JFrame {
      * limpieza.
      */
     public static void limpiarComboBox(Container contenedor) {
-        
-        // Obtener todos los componentes directos del contenedor
-        Component[] componentes = contenedor.getComponents();
 
+        // Obtener todos los componentes del contenedor
+        Component[] componentes = contenedor.getComponents();
+        JComboBox<?> comboBox;
+
+        // Por cada componente del contenedor si es un ComboBox limpia sus items
         for (Component componente : componentes) {
-            
+
             if (componente instanceof JComboBox) {
-                JComboBox comboBox = (JComboBox) componente;
+                comboBox = (JComboBox<?>) componente;
                 comboBox.removeAllItems();
+                // Se reestablece su primer item
                 comboBox.getItemAt(0);
             }
 
-            // Limpieza recursiva en casco que un componente sea otro contenedor
+            // Limpieza recursiva en caso que un componente sea otro contenedor
             if (componente instanceof Container) {
                 limpiarComboBox((Container) componente);
             }
@@ -542,7 +588,7 @@ public class ConectorJFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jbSalir.setText("Salir y desconectar");
-        jbSalir.setToolTipText("Pulsa para salir del programa");
+        jbSalir.setToolTipText("Pulsa para salir del programa y desconectar de la base de datos");
         jbSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbSalirActionPerformed(evt);
@@ -945,42 +991,52 @@ public class ConectorJFrame extends javax.swing.JFrame {
 
     private void jbConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbConectarActionPerformed
         // TODO add your handling code here:
+        // Se llama al método conector
         conector();
     }//GEN-LAST:event_jbConectarActionPerformed
 
     private void jbConsultaB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbConsultaB1ActionPerformed
         // TODO add your handling code here:
+        // Se declaran variables auxiliares
         int item;
         String comunidadSeleccionada;
         item = jcbComunidad.getSelectedIndex();
         comunidadSeleccionada = jcbComunidad.getItemAt(item);
+        // Se ejecuta la consulta B1
         consultaB1(con, comunidadSeleccionada);
     }//GEN-LAST:event_jbConsultaB1ActionPerformed
 
     private void jbConsultaB2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbConsultaB2ActionPerformed
         // TODO add your handling code here:
+        // Se declaran variables auxiliares
         int item;
         String dorsalSeleccionado;
         item = jcbDorsales.getSelectedIndex();
         dorsalSeleccionado = jcbDorsales.getItemAt(item);
+        // Se ejecuta la consulta B2
         consultaB2(con, dorsalSeleccionado);
     }//GEN-LAST:event_jbConsultaB2ActionPerformed
 
     private void jbEjercicioCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEjercicioCActionPerformed
         // TODO add your handling code here:
+        // Se declaran variables auxiliares
         int item;
         String codigoSeleccionado;
         item = jcbCodigoPrueba.getSelectedIndex();
         codigoSeleccionado = jcbCodigoPrueba.getItemAt(item);
         String mensajeEx;
+        // Se ejecuta la actualización C2 y la posterior consulta C2
         try {
             Integer distancia = Integer.parseInt(jtfDistancia.getText());
             actualizacionC(con, codigoSeleccionado, distancia);
             consultaC(con, codigoSeleccionado);
         } catch (NumberFormatException ex) {
+            // Se capta la excepción y se avisa al usario
             mensajeEx=String.format("El dato ingresado por el usuario no se ha podido convertir a número entero. Error: %s",ex.getMessage());
             System.err.println(mensajeEx);
+            // Se emplea un objeto JOptionPane para avisar al usuario
             JOptionPane.showMessageDialog(this, mensajeEx);
+            // Se emplea una etiqueta en la aplicación swing para avisar al usuario
             jlEjercicioC.setText(mensajeEx);
             jlEjercicioC.setForeground(Color.red);
         }
@@ -989,21 +1045,25 @@ public class ConectorJFrame extends javax.swing.JFrame {
 
     private void jbDesconectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbDesconectarActionPerformed
         // TODO add your handling code here:
+        // Se llama al método desconectar
         desconectar(con);
     }//GEN-LAST:event_jbDesconectarActionPerformed
 
     private void jbSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalirActionPerformed
         // TODO add your handling code here:
+        // Primero se desconecta y luego se sale del programa
         desconectar(con);
         System.exit(0);
     }//GEN-LAST:event_jbSalirActionPerformed
 
     private void jbProcedimientoDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbProcedimientoDActionPerformed
         // TODO add your handling code here:
+        // Se declaran variables auxiliares
         int item;
         String posicionSeleccionada;
         item = jcbPosicion.getSelectedIndex();
         posicionSeleccionada = jcbPosicion.getItemAt(item);
+        // Se ejecuta el procedimiento D
         procedimientoD(con,posicionSeleccionada);
     }//GEN-LAST:event_jbProcedimientoDActionPerformed
 
