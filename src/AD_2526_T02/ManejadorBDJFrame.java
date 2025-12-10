@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package antonio_naranjo_ad2_e1;
+package AD_2526_T02;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
